@@ -428,7 +428,7 @@ checkConfig() {
     getConfig() {
         read -p "$(blue) Please enter the panel address (eg: https://demo.sspanel.org):" panel_address
         read -p "$(blue) Please enter the mu key:" mu_key
-	read -p "$(blue) Please enter the node_id:" node_id
+	read -p "$(blue) Please enter the node id:" node_id
 
         if [[ "${panel_address}" = "" ]] || [[ "${mu_key}" = "" ]];then
             echo -e "$(red) Complete all necessary parameter entries."
