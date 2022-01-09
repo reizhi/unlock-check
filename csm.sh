@@ -428,6 +428,7 @@ checkConfig() {
     getConfig() {
         read -p "$(blue) Please enter the panel address (eg: https://demo.sspanel.org):" panel_address
         read -p "$(blue) Please enter the mu key:" mu_key
+	read -p "$(blue) Please enter the node_id:" node_id
 
         if [[ "${panel_address}" = "" ]] || [[ "${mu_key}" = "" ]];then
             echo -e "$(red) Complete all necessary parameter entries."
@@ -442,6 +443,7 @@ checkConfig() {
 
         echo "${panel_address}" > /root/csm.config
         echo "${mu_key}" >> /root/csm.config
+	echo "${node_id}" >> /root/csm.config
     }
 
     if [[ ! -e "/root/csm.config" ]];then
@@ -461,8 +463,9 @@ postData() {
     
     panel_address=$(sed -n 1p /root/csm.config)
     mu_key=$(sed -n 2p /root/csm.config)
+    mu_key=$(sed -n 3p /root/csm.config)
 
-    curl -s -X POST -d "content=$(cat /root/media_test_tpl.json | base64 | xargs echo -n | sed 's# ##g')" "${panel_address}/mod_mu/media/saveReport?key=${mu_key}" > /dev/null
+    curl -s -X POST -d "content=$(cat /root/media_test_tpl.json | base64 | xargs echo -n | sed 's# ##g')" "${panel_address}/mod_mu/media/saveReport?key=${mu_key}&node_id=${node_id}" > /dev/null
 
     rm -rf /root/media_test_tpl.json
 }
@@ -475,7 +478,7 @@ printInfo() {
     echo
     echo -e "${green_start}Project: https://github.com/iamsaltedfish/check-stream-media${color_end}"
     echo -e "${green_start}Author: @iamsaltedfish${color_end}"
-    echo -e "${green_start}2021-01-09 v.1.0.0${color_end}"
+    echo -e "${green_start}2021-01-10 v.1.0.1${color_end}"
 }
 
 runCheck() {
