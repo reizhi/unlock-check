@@ -463,7 +463,7 @@ postData() {
     
     panel_address=$(sed -n 1p /root/csm.config)
     mu_key=$(sed -n 2p /root/csm.config)
-    mu_key=$(sed -n 3p /root/csm.config)
+    node_id=$(sed -n 3p /root/csm.config)
 
     curl -s -X POST -d "content=$(cat /root/media_test_tpl.json | base64 | xargs echo -n | sed 's# ##g')" "${panel_address}/mod_mu/media/saveReport?key=${mu_key}&node_id=${node_id}" > /dev/null
 
