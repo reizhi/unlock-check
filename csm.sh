@@ -392,8 +392,7 @@ modifyJsonTemplate() {
 }
 
 setCronTask() {
-    addTask()
-    {
+    addTask() {
         execution_time_interval=$1
         
         crontab -l >/root/crontab.list
@@ -418,11 +417,11 @@ setCronTask() {
 
         if [[ "${time_interval_id}" == "5" ]];then
             time_interval=6
-        else if [[ "${time_interval_id}" == "6" ]];then
+        elif [[ "${time_interval_id}" == "6" ]];then
             time_interval=8
-        else if [[ "${time_interval_id}" == "7" ]];then
+        elif [[ "${time_interval_id}" == "7" ]];then
             time_interval=12
-        else if [[ "${time_interval_id}" == "8" ]];then
+        elif [[ "${time_interval_id}" == "8" ]];then
             time_interval=24
         else
             time_interval=$time_interval_id
@@ -492,7 +491,7 @@ printInfo() {
     echo
     echo -e "${green_start}Project: https://github.com/iamsaltedfish/check-stream-media${color_end}"
     echo -e "${green_start}Author: @iamsaltedfish${color_end}"
-    echo -e "${green_start}2021-01-10 v.1.0.2${color_end}"
+    echo -e "${green_start}2021-01-10 v.1.0.3${color_end}"
 }
 
 runCheck() {
