@@ -394,8 +394,10 @@ modifyJsonTemplate() {
 setCronTask() {
     addTask()
     {
+        execution_time_interval=$1
+        
         crontab -l >/root/crontab.list
-        echo "0 */${time_interval} * * * /bin/bash /root/csm.sh" >>/root/crontab.list
+        echo "0 */${execution_time_interval} * * * /bin/bash /root/csm.sh" >>/root/crontab.list
         crontab /root/crontab.list
         rm -rf /root/crontab.list
         echo -e "$(green) The scheduled task is added successfully."
@@ -412,13 +414,25 @@ setCronTask() {
         echo "[7] 12 hour"
         echo "[8] 24 hour"
         echo
-        read -p "$(blue) Please select the detection frequency and enter the serial number (eg: 1):" time_interval
+        read -p "$(blue) Please select the detection frequency and enter the serial number (eg: 1):" time_interval_id
 
-        case "${time_interval}" in
+        if [[ "${time_interval_id}" == "5" ]];then
+            time_interval=6
+        else if [[ "${time_interval_id}" == "6" ]];then
+            time_interval=8
+        else if [[ "${time_interval_id}" == "7" ]];then
+            time_interval=12
+        else if [[ "${time_interval_id}" == "8" ]];then
+            time_interval=24
+        else
+            time_interval=$time_interval_id
+        fi
+
+        case "${time_interval_id}" in
             [1-8])
-                addTask;;
+                addTask ${time_interval};;
             *)
-                echo -e "$(red) Please enter a sequence number from the list."
+                echo -e "$(red) Choose one from the list given and enter the sequence number."
                 exit;;
         esac
     fi
@@ -428,7 +442,7 @@ checkConfig() {
     getConfig() {
         read -p "$(blue) Please enter the panel address (eg: https://demo.sspanel.org):" panel_address
         read -p "$(blue) Please enter the mu key:" mu_key
-	read -p "$(blue) Please enter the node id:" node_id
+        read -p "$(blue) Please enter the node id:" node_id
 
         if [[ "${panel_address}" = "" ]] || [[ "${mu_key}" = "" ]];then
             echo -e "$(red) Complete all necessary parameter entries."
@@ -441,18 +455,18 @@ checkConfig() {
             exit
         fi
 
-        echo "${panel_address}" > /root/csm.config
-        echo "${mu_key}" >> /root/csm.config
-	echo "${node_id}" >> /root/csm.config
+        echo "${panel_address}" > /root/.csm.config
+        echo "${mu_key}" >> /root/.csm.config
+        echo "${node_id}" >> /root/.csm.config
     }
 
-    if [[ ! -e "/root/csm.config" ]];then
+    if [[ ! -e "/root/.csm.config" ]];then
         getConfig
     fi
 }
 
 postData() {
-    if [[ ! -e "/root/csm.config" ]];then
+    if [[ ! -e "/root/.csm.config" ]];then
         echo -e "$(red) Missing configuration file."
         exit
     fi
@@ -461,9 +475,9 @@ postData() {
         exit
     fi
     
-    panel_address=$(sed -n 1p /root/csm.config)
-    mu_key=$(sed -n 2p /root/csm.config)
-    node_id=$(sed -n 3p /root/csm.config)
+    panel_address=$(sed -n 1p /root/.csm.config)
+    mu_key=$(sed -n 2p /root/.csm.config)
+    node_id=$(sed -n 3p /root/.csm.config)
 
     curl -s -X POST -d "content=$(cat /root/media_test_tpl.json | base64 | xargs echo -n | sed 's# ##g')" "${panel_address}/mod_mu/media/saveReport?key=${mu_key}&node_id=${node_id}" > /dev/null
 
@@ -478,7 +492,7 @@ printInfo() {
     echo
     echo -e "${green_start}Project: https://github.com/iamsaltedfish/check-stream-media${color_end}"
     echo -e "${green_start}Author: @iamsaltedfish${color_end}"
-    echo -e "${green_start}2021-01-10 v.1.0.1${color_end}"
+    echo -e "${green_start}2021-01-10 v.1.0.2${color_end}"
 }
 
 runCheck() {
