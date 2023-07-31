@@ -265,24 +265,22 @@ MediaUnlockTest_Netflix() {
 }
 
 MediaUnlockTest_YouTube_Premium() {
-    local tmpresult=$(curl $useNIC -${1} -sS -H "Accept-Language: en" "https://www.youtube.com/premium" 2>&1)
-    local region=$(curl $useNIC --user-agent "${UA_Browser}" -${1} -sL --max-time 10 "https://www.youtube.com/premium" | grep "countryCode" | sed 's/.*"countryCode"//' | cut -f2 -d'"')
-
-    if [ -n "$region" ]; then
-        sleep 0
-    else
-        isCN=$(echo $tmpresult | grep 'www.google.cn')
-        if [ -n "$isCN" ]; then
-            region=CN
-        else
-            region=US
-        fi
-    fi
+    local tmpresult=$(curl $useNIC $usePROXY $xForward --user-agent "${UA_Browser}" -${1} --max-time 10 -sSL -H "Accept-Language: en" -b "YSC=BiCUU3-5Gdk; CONSENT=YES+cb.20220301-11-p0.en+FX+700; GPS=1; VISITOR_INFO1_LIVE=4VwPMkB7W5A; PREF=tz=Asia.Shanghai; _gcl_au=1.1.1809531354.1646633279" "https://www.youtube.com/premium" 2>&1)
 
     if [[ "$tmpresult" == "curl"* ]]; then
-        modifyJsonTemplate 'YouTube_Premium_result' 'Unknow'
+        echo -n -e "\r YouTube Premium:\t\t\t${Font_Red}Failed (Network Connection)${Font_Suffix}\n"
         return
     fi
+
+    local isCN=$(echo $tmpresult | grep 'www.google.cn')
+    if [ -n "$isCN" ]; then
+        echo -n -e "\r YouTube Premium:\t\t\t${Font_Red}No${Font_Suffix} ${Font_Green} (Region: CN)${Font_Suffix} \n"
+        return
+    fi
+    local isNotAvailable=$(echo $tmpresult | grep 'Premium is not available in your country')
+    local region=$(echo $tmpresult | grep "countryCode" | sed 's/.*"countryCode"//' | cut -f2 -d'"')
+    local isAvailable=$(echo $tmpresult | grep '/month')
+
 
     local result=$(echo $tmpresult | grep 'Premium is not available in your country')
     if [ -n "$result" ]; then
@@ -291,7 +289,7 @@ MediaUnlockTest_YouTube_Premium() {
 
     fi
 
-    local result=$(echo $tmpresult | grep 'manageSubscriptionButton')
+    local result=$region
     if [ -n "$result" ]; then
         modifyJsonTemplate 'YouTube_Premium_result' 'Yes' "${region}"
         return
@@ -330,7 +328,6 @@ MediaUnlockTest_DisneyPlus() {
     local isUnabailable=$(echo $previewcheck | grep 'unavailable')
     local region=$(echo $tmpresult | python -m json.tool 2>/dev/null | grep 'countryCode' | cut -f4 -d'"')
     local inSupportedLocation=$(echo $tmpresult | python -m json.tool 2>/dev/null | grep 'inSupportedLocation' | awk '{print $2}' | cut -f1 -d',')
-
 
     if [[ "$region" == "JP" ]]; then
         modifyJsonTemplate 'DisneyPlus_result' 'Yes' 'JP'
@@ -502,9 +499,9 @@ runCheck() {
     MediaUnlockTest_BilibiliHKMCTW 4
     MediaUnlockTest_BilibiliTW 4
     MediaUnlockTest_AbemaTV_IPTest 4
-    MediaUnlockTest_Netflix 4
-    MediaUnlockTest_YouTube_Premium 4
-    MediaUnlockTest_DisneyPlus 4
+    MediaUnlockTest_Netflix 6
+    MediaUnlockTest_YouTube_Premium 6
+    MediaUnlockTest_DisneyPlus 6
 }
 
 main() {
