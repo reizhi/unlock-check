@@ -295,7 +295,7 @@ MediaUnlockTest_YouTube_Premium() {
         modifyJsonTemplate 'YouTube_Premium_result' 'Yes' "${region}"
         return
     else
-        modifyJsonTemplate 'YouTube_Premium_result' 'Unknow'
+        modifyJsonTemplate 'YouTube_Premium_result' 'Yes'
     fi
 }
 
@@ -318,6 +318,7 @@ MediaUnlockTest_DisneyPlus() {
 
     if [ -n "$isBanned" ] || [ -n "$is403" ]; then
         echo -n -e "\r Disney+:\t\t\t\t${Font_Red}No${Font_Suffix}\n"
+        modifyJsonTemplate 'DisneyPlus_result' 'No'
         return
     fi
 
