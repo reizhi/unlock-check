@@ -275,6 +275,7 @@ MediaUnlockTest_YouTube_Premium() {
     local isCN=$(echo $tmpresult | grep 'www.google.cn')
     if [ -n "$isCN" ]; then
         echo -n -e "\r YouTube Premium:\t\t\t${Font_Red}No${Font_Suffix} ${Font_Green} (Region: CN)${Font_Suffix} \n"
+        modifyJsonTemplate 'YouTube_Premium_result' 'No' "CN"
         return
     fi
     local isNotAvailable=$(echo $tmpresult | grep 'Premium is not available in your country')
@@ -284,7 +285,7 @@ MediaUnlockTest_YouTube_Premium() {
 
     local result=$(echo $tmpresult | grep 'Premium is not available in your country')
     if [ -n "$result" ]; then
-        modifyJsonTemplate 'YouTube_Premium_result' 'No' "${region}"
+        modifyJsonTemplate 'YouTube_Premium_result' 'No' ""
         return
 
     fi
@@ -499,9 +500,9 @@ runCheck() {
     MediaUnlockTest_BilibiliHKMCTW 4
     MediaUnlockTest_BilibiliTW 4
     MediaUnlockTest_AbemaTV_IPTest 4
-    MediaUnlockTest_Netflix 6
-    MediaUnlockTest_YouTube_Premium 6
-    MediaUnlockTest_DisneyPlus 6
+    MediaUnlockTest_Netflix 4
+    MediaUnlockTest_YouTube_Premium 4
+    MediaUnlockTest_DisneyPlus 4
 }
 
 main() {
